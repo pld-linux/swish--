@@ -6,21 +6,6 @@ Version:	5.7
 Release:	1
 License:	GPL
 Group:		Applications/Text
-Group(cs):	Aplikace/Text
-Group(da):	Programmer/Tekst
-Group(de):	Applikationen/Text
-Group(es):	Aplicaciones/Texto
-Group(fr):	Applications/Texte
-Group(is):	Forrit/Texti
-Group(it):	Applicazioni/Testo
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔ф╔╜╔╧╔х
-Group(no):	Applikasjoner/Tekst
-Group(pl):	Aplikacje/Tekst
-Group(pt):	AplicaГУes/Texto
-Group(ru):	Приложения/Текстовые утилиты
-Group(sl):	Programi/Besedilo
-Group(sv):	TillДmpningar/Text
-Group(uk):	Прикладн╕ Програми/Текстов╕ утил╕ти
 Source0:	http://homepage.mac.com/pauljlucas/software/%{name}-%{version}.tar.gz
 Patch0:		%{name}-debian.patch
 URL:		http://homepage.mac.com/pauljlucas/software/swish/
