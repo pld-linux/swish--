@@ -2,7 +2,7 @@
 Summary:	Simple Web Indexing System for Humans
 Summary(pl):	Prosty system indeksowania stron WWW
 Name:		swish++
-Version:	5.7
+Version:	5.9.5
 Release:	1
 License:	GPL
 Group:		Applications/Text
