@@ -2,12 +2,12 @@
 Summary:	Simple Web Indexing System for Humans
 Summary(pl):	Prosty system indeksowania stron WWW
 Name:		swish++
-Version:	5.9.5
-Release:	2
+Version:	5.13.5
+Release:	1
 License:	GPL
 Group:		Applications/Text
 Source0:	http://homepage.mac.com/pauljlucas/software/%{name}-%{version}.tar.gz
-# Source0-md5:	573e7c949d74f2ac654556766025bfb3
+# Source0-md5:	a400a2165e8ec435d97f86c6ad82f3bb
 Patch0:		%{name}-debian.patch
 Patch1:		%{name}-splitmailbox.patch
 URL:		http://homepage.mac.com/pauljlucas/software/swish/
