@@ -10,7 +10,7 @@ Source0:	http://homepage.mac.com/pauljlucas/software/%{name}-%{version}.tar.gz
 Patch0:		%{name}-debian.patch
 URL:		http://homepage.mac.com/pauljlucas/software/swish/
 BuildRequires:	libstdc++-devel
-BuildRequires:  rpm-perlprov >= 3.0.3-16
+BuildRequires:	rpm-perlprov >= 3.0.3-16
 BuildRequires:	perl-modules >= 5.6
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -40,7 +40,7 @@ rm -rf $RPM_BUILD_ROOT
 
 gzip -9nf www_example/* Changes Email* README
 
-%clean 
+%clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
