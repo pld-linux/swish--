@@ -34,8 +34,8 @@ SWISH++ is a Unix-based file indexing and searching engine (typically
 used to index and search files on web sites).
 
 %description -l pl
-SWISH++ jest bazuj±cym na Unixie systemem indeksowania oraz silnikiem
-wyszukiwarku (typowo u¿ywanym do indeksowania oraz przeszukiwania
+SWISH++ jest bazuj±cym na Uniksie systemem indeksowania oraz silnikiem
+wyszukiwarki (typowo u¿ywanym do indeksowania oraz przeszukiwania
 plików na stronach www).
 
 %prep
