@@ -24,7 +24,7 @@ used to index and search files on web sites).
 %description -l pl
 SWISH++ jest bazuj±cym na Uniksie systemem indeksowania oraz silnikiem
 wyszukiwarki (typowo u¿ywanym do indeksowania oraz przeszukiwania
-plików na stronach www).
+plików na stronach WWW).
 
 %prep
 %setup -q
