@@ -2,12 +2,12 @@
 Summary:	Simple Web Indexing System for Humans
 Summary(pl):	Prosty system indeksowania stron WWW
 Name:		swish++
-Version:	5.13.5
+Version:	6.0.4
 Release:	1
 License:	GPL
 Group:		Applications/Text
 Source0:	http://homepage.mac.com/pauljlucas/software/%{name}-%{version}.tar.gz
-# Source0-md5:	a400a2165e8ec435d97f86c6ad82f3bb
+# Source0-md5:	3a81a1ca59addd6198f89e680bc77bff
 Patch0:		%{name}-debian.patch
 Patch1:		%{name}-splitmailbox.patch
 URL:		http://homepage.mac.com/pauljlucas/software/swish/
@@ -29,7 +29,7 @@ plików na stronach WWW).
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
+#%patch1 -p1
 
 %build
 %{__make} CC="%{__cxx}" CXX="%{__cxx}" OPTIM="%{rpmcflags}"
@@ -47,7 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc www_example/* Changes Email* README
+%doc www_example/* BUGS Changes README
 %attr(755,root,root) %{_bindir}/*
 %{_libdir}/%{name}
 %{_mandir}/man?/*
