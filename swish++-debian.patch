@@ -1,0 +1,477 @@
+diff -urN swish++-5.7.org/Email-Indexing-Mini-Howto.txt swish++-5.7/Email-Indexing-Mini-Howto.txt
+--- swish++-5.7.org/Email-Indexing-Mini-Howto.txt	Thu Jan  1 01:00:00 1970
++++ swish++-5.7/Email-Indexing-Mini-Howto.txt	Tue Feb 19 19:28:32 2002
+@@ -0,0 +1,155 @@
++ ;-*- outline -*-
++
++"swish++ -- A Mail Indexing System for Humans"
++
++* swish++ + Email
++  Swish++ is great for indexing and later, of course, searching and
++  retrieving your old emails.
++
++!!! Swish++ searches on a per file basis, so its use only makes sense
++    with one-file-per-message systems (like Maildir, gnus nnml, mh ... and
++    not with mbox based storage -- use grepmail instead or just switch
++    your mail system, especially with a high volume of archived messages)
++
++** Indexing of emails
++
++swish++ provides a specific module for this purpose
++
++*** index example:
++
++pwd = ~/Mail
++index++  -v3 -s stop_words  -e 'mail:*' -E 'Incomin*' -E '*~'
++./archive ./Ich ./drafts ./maintainer ./maintainer-debian
++
++-e denotes the module, -E excludes file-pattern and -s indicates a
++ specific stop word file 
++
++(man index++)  
++
++*** cron
++
++    If you want always "fresh" indexes you need the help of cron or the
++    searchd daemon (man searchd).
++
++**** cron sample
++
++41 06 * * * /usr/bin/index++ -s /home/YOU/Mail/stop_words  -e 'mail:*' -E \
++'Incomin*' -E '*~' -E '*.alt' \
++--config-file=/home/YOU/Mail/swish++.config \
++--index-file=/home/YOU/Mail/swish++.index /home/YOU/Mail/archive /home/YOU/Mail/Ich /home/YOU/Mail/drafts /home/YOU/Mail/maintainer 2>&1
++
++"Index every day at 6:41 the mentioned directories (recursively - the
++default) use a config-file and create the index in /home/YOU/Mail; use
++the mail module (-e 'mail:*') and don't index certain patterns (-E
++...)."
++
++	Or put the whole command as a script and execute it from cron:
++
++41 06 * * * /home/YOU/cron_swish++.sh 2>&1
++  
++
++*** search example: 
++	  >search++ from = mhummel and swish
++	  # results: 9
++	  100 ./Ich/930 1175 Indexing
++	   58 ./selber/254 1110 Bug#88974 ITA: swish++ -- Simple Web Indexing System for 
++	   47 ./selber/301 3270 Re: Bug#129390: swish++: index++ gets a segmentation fault           41 ./selber/338 939 Indexing
++	   [...]
++
++	   Though this is already quite useful, it doesn't signify the whole
++	   comfort. I bet you want to read the rediscovered email with your
++	   favorite mail reader. 
++
++	   (for search++ options s. man search++ , of course)
++
++
++* Mail Reader Integration of swish++
++
++** Integration with emacs + gnus + nnir
++
++*** How to use emacs? 
++
++    Get one year of vacancy and have some kind of remote approach to this digital
++    epos.
++
++*** How to use gnus?
++
++    See above ...
++
++*** gnus + nnir + swish++
++
++    In the examples directory you'll find a patched version of nnir.el
++    (Maybe the small patch will be included at the time you are reading
++    this.)
++
++**** nnml-back-ends and nnir
++
++***** put nnir.el in your load-path
++
++***** Add the following to your ~/.gnus init-file
++
++    (setq nnir-search-engine 'swish++)
++    ;;the following are the default values
++    (setq  nnir-swish++-program "search++") ; the search executable in Debian
++    ;(setq nnir-swish++-index-file "/home/YOU/Mail/swish++.index");
++    ;the index location mail is stored in ~/Mail normally -- the default
++
++    (Have a look at Kai's commentaries in nnir.el
++    Maybe you have to set 'nnir-mail-back-end' but with nnml -- and
++    having nnml as the default gnus-select-method -- the default is
++    fine)
++
++***** Interaction within gnus
++
++      Type G G and you will be prompted for a query (enter the same as with plain
++      search++ at the command line).
++
++      The search results will form a new group.
++
++      Further try G T and enjoy
++
++** Integration with mutt
++
++   mutt supports the Maildir format and mh
++   (http://www.reedmedia.net/misc/mail/mailbox-formats.html and
++   http://www.courier-mta.org/mbox-vs-maildir/#intro1) well; you don't
++   need to install qmail to be able to work with maildirs, not even
++   the MTA needs maildir support s. procmail (even Mail::Audit does
++   the right thing, discovering a maildir, and accepts to the
++   Maildir/new directory).
++
++
++*** swishmutt.sh
++
++    (Caveat: You need the procmail package installed -- for the mbox
++    formatter)
++  
++    Copy this script to your ~/bin/ directory (or, of course adapt the
++    settings to your needs)
++    It's just an example of how you could parse the swish++ results
++    for mutt. But checking and adapting the variables it should
++    work out of the box. 
++    Add something like:
++    
++    macro index "\ch" "!~/bin/swishmutt.sh\nc=sqmbox.tmp\n"
++
++    folder-hook sqmbox.tmp set sort=mailbox-order
++
++
++    to your .muttrc file. (Make sure that mutt actually finds the
++    temporary mbox : sqmbox.tmp -- the script assumes
++    ~/mail/sqmbox.tmp)
++    
++    The folder-hook is necessary to conserve the search ranking. (The
++    mailbox order is OK, so no mess with date_sent and the like.) 
++
++**** Interaction within mutt
++
++     The macro works from within a mail folder. Just press Ctrl-h and
++     you will be prompted for a query.
++     Then if everything works fine you will enter a temporary mbox
++     with the emails ordered corresponding with the search++ results. 
++     
++
++MH <mhummel@debian.org>
++
+diff -urN swish++-5.7.org/GNUmakefile swish++-5.7/GNUmakefile
+--- swish++-5.7.org/GNUmakefile	Tue Feb 19 19:29:36 2002
++++ swish++-5.7/GNUmakefile	Tue Feb 19 19:29:53 2002
+@@ -186,7 +186,7 @@
+ INITD_DIR:= $(firstword $(shell ls -d /etc/init.d /etc/rc.d/init.d 2>/dev/null))
+ LEVEL_DIR:= $(firstword $(shell ls -d /etc/rc3.d /etc/rc.d/rc3.d 2>/dev/null))
+ 
+-install: install_bin install_lib install_man install_conf
++install: install_bin install_lib install_man 
+ 
+ install_bin: $(BIN_TARGET) $(I_BIN)
+ 	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) $(BIN_TARGET) $(I_BIN)
+diff -urN swish++-5.7.org/config/config.mk swish++-5.7/config/config.mk
+--- swish++-5.7.org/config/config.mk	Tue Feb 19 19:29:36 2002
++++ swish++-5.7/config/config.mk	Tue Feb 19 19:29:53 2002
+@@ -118,7 +118,7 @@
+ #		The command to remove files recursively and ignore errors;
+ #		usually "rm -fr" for Unix or "erase" for Windows.
+ 
+-PERL:=		/usr/local/bin/perl
++PERL:=		/usr/bin/perl
+ #		The full path to the Perl 5 executable; usually "/bin/perl" or
+ #		"/usr/local/bin/perl" for Unix or "\Perl\bin\perl" for
+ #		Windows.  You need this only if you intend on using
+@@ -192,28 +192,28 @@
+ #
+ ###############################################################################
+ 
+-INSTALL:=	$(ROOT)/install-sh
++INSTALL:=	/usr/bin/install
+ #		Install command; usually "$(ROOT)/install-sh".
+ 
+-I_ROOT:=	/usr/local
++I_ROOT:=	$(DESTDIR)/usr
+ #		The top-level directory of where SWISH++ will be installed.
+ 
+ I_BIN:=		$(I_ROOT)/bin
+ #		Where executables are installed; usually "$(I_ROOT)/bin".
+ 
+-I_ETC:=		$(I_ROOT)/etc
++I_ETC:=		$(DESTDIR)/etc
+ #		Where .conf files are installed; usually "$(I_ROOT)/etc".
+ 
+-I_LIB:=		$(I_ROOT)/lib
++I_LIB:=		$(I_ROOT)/lib/swish++
+ #		Where libraries are installed; usually "$(I_ROOT)/lib".
+ 
+-I_MAN:=		$(I_ROOT)/man
++I_MAN:=		$(I_ROOT)/share/man
+ #		Where manual pages are installed; usually "$(I_ROOT)/man".
+ 
+-I_OWNER:=	-o bin
++I_OWNER:=	-o root
+ #		The owner of the installed files.
+ 
+-I_GROUP:=	-g bin
++I_GROUP:=	-g root
+ #		The group of the installed files.
+ 
+ I_MODE:=	-m 644
+diff -urN swish++-5.7.org/config.h swish++-5.7/config.h
+--- swish++-5.7.org/config.h	Tue Feb 19 19:29:36 2002
++++ swish++-5.7/config.h	Tue Feb 19 19:29:53 2002
+@@ -186,14 +186,14 @@
+ //		Default maximum number of search results; this can be
+ //		overridden either in a config. file or on the command line.
+ 
+-#ifdef	WIN32
+-char const	TempDirectory_Default[]		= "/temp";
+-#else
+-#error		You have not set TempDirectory_Default for your system.
+-#error		Comment out these lines after you have set it.
++//#ifdef	WIN32
++//char const	TempDirectory_Default[]		= "/temp";
++//#else
++//#error		You have not set TempDirectory_Default for your system.
++//#error		Comment out these lines after you have set it.
+ 
+ char const	TempDirectory_Default[]		= "/tmp";
+-#endif
++//#endif
+ //		Default directory to use for temporary files during indexing.
+ //		If your OS mounts swap space via /tmp (e.g., Solaris), as
+ //		indexing progresses and more files get created in /tmp, you
+@@ -218,10 +218,10 @@
+ //		it is discarded as being too frequent; this can be overridden
+ //		either in a config. file or on the command line.
+ 
+-#error		You have not set Word_Threshold for your system.
+-#error		Comment out these lines after you have set it.
++//#error		You have not set Word_Threshold for your system.
++//#error		Comment out these lines after you have set it.
+ 
+-int const	Word_Threshold			= 250000;
++int const	Word_Threshold			= 100000;
+ //		The word count past which partial indicies are generated and
+ //		merged since all the words are too big to fit into memory at
+ //		the same time.  If you index and your machine begins to swap
+diff -urN swish++-5.7.org/man/man1/searchc.1 swish++-5.7/man/man1/searchc.1
+--- swish++-5.7.org/man/man1/searchc.1	Thu Jan  1 01:00:00 1970
++++ swish++-5.7/man/man1/searchc.1	Tue Feb 19 19:28:32 2002
+@@ -0,0 +1,87 @@
++.\"                                      Hey, EMACS: -*- nroff -*-
++.\" First parameter, NAME, should be all caps
++.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
++.\" other parameters are allowed: see man(7), man(1)
++.TH SEARCHC 1 "Dezember 30, 2001"
++.\" Please adjust this date whenever revising the manpage.
++.\"
++.\" Some roff macros, for reference:
++.\" .nh        disable hyphenation
++.\" .hy        enable hyphenation
++.\" .ad l      left justify
++.\" .ad b      justify to both left and right margins
++.\" .nf        disable filling
++.\" .fi        enable filling
++.\" .br        insert line break
++.\" .sp <n>    insert n+1 empty lines
++.\" for manpage-specific macros, see man(7)
++.SH NAME
++searchc \-  Simple search client script used mostly to test 'search++'
++when running as a server daemon.
++.SH SYNOPSIS
++.B searchc
++.RI [ options ] \  query 
++.SH DESCRIPTION
++This manual page documents briefly the
++.B searchc command.
++This manual page was written for the Debian GNU/Linux distribution
++because the original program does not have a manual page.
++.PP
++.\" TeX users may be more comfortable with the \fB<whatever>\fP and
++.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
++.\" respectively.
++
++.SH OPTIONS
++.TP
++.B \-a socket_addr 
++Host and port of socket address [default: *:1967]
++.TP
++.B \-c config_file
++Name of configuration file [default: $ConfigFile_Default]
++.TP
++.B \-d              
++Dump query word indices and exit
++.TP
++.B \-D 
++Dump entire word index and exit
++.TP
++.B \-h  
++Print this help message
++.TP
++.B \-m max_results 
++Maximum number of results [default: $ResultsMax_Default]
++.TP
++.B \-M 
++Dump meta-name index and exit
++.TP
++.B \-r skip_results 
++Number of initial results to skip [default: 0]
++.TP
++.B \-s 
++Stem words prior to search [default: no]
++.TP
++.B \-S 
++Dump stop-word index and exit
++.TP
++.B \-T 
++Connect via TCP socket
++.TP
++.B \-u socket_file 
++Name of socket file [default: $SocketFile_Default]
++.TP
++.B \-U 
++Connect via Unix domain socket
++.TP
++.B \-V 
++Print version number and exit
++.TP
++.B \-w size[,chars] 
++Dump window of words around query words [default: 0]
++
++.SH SEE ALSO
++.BR search++ (1),
++.BR searchmonitor (8),
++.BR searchd (8).
++.SH AUTHOR
++This manual page was written by Michael Hummel <mhummel@debian.org>,
++for the Debian GNU/Linux system (but may be used by others).
+diff -urN swish++-5.7.org/swish++.conf swish++-5.7/swish++.conf
+--- swish++-5.7.org/swish++.conf	Tue Feb 19 19:29:36 2002
++++ swish++-5.7/swish++.conf	Tue Feb 19 19:29:53 2002
+@@ -25,7 +25,7 @@
+ #	   THEMSELVES!
+ ##
+ 
+-#AssociateMeta		yes
++AssociateMeta		yes
+ #
+ # used by: index; when "no", same as the -A option.
+ #
+@@ -39,7 +39,7 @@
+ #	class names of HTML and XHTML elements whose content text is not to be
+ #	indexed.
+ 
+-#ExcludeFile		*.gif *.jpg
++ExcludeFile		*.gif *.jpg
+ #
+ # used by: index, extract; same as the -E option.
+ #
+@@ -49,8 +49,8 @@
+ 
+ # Mail (RFC 822) and News
+ # -----------------------
+-#IncludeMeta		Bcc Cc Comments Content-Description From Keywords
+-#IncludeMeta		Newsgroups Resent-To Subject To
++IncludeMeta		Bcc Cc Comments Content-Description From Keywords
++IncludeMeta		Newsgroups Resent-To Subject To
+ 
+ # vCard
+ # -----
+@@ -59,9 +59,9 @@
+ 
+ # Unix manual pages
+ # -----------------
+-#IncludeMeta		author bugs caveats description diagnostics environment
+-#IncludeMeta		errors examples exit-status files history name notes
+-#IncludeMeta		options return-value see-also synopsis warnings
++IncludeMeta		author bugs caveats description diagnostics environment
++IncludeMeta		errors examples exit-status files history name notes
++IncludeMeta		options return-value see-also synopsis warnings
+ 
+ #ExcludeMeta		meta1 meta2 metaN
+ #
+@@ -96,7 +96,7 @@
+ #
+ #	Additionally, meta names can be reassigned.
+ 
+-#ExtractExtension	txt
++ExtractExtension	txt
+ #
+ # used by extract; same as the -x option.
+ #
+@@ -139,7 +139,7 @@
+ #	value!
+ 
+ #FilterAttachment application/*word	extract -f %f > @%F.txt
+-#FilterAttachment application/pdf	pdftotext %f @%F.txt
++FilterAttachment application/pdf	pdftotext %f @%F.txt
+ #FilterAttachment application/postscript	pstotext %f > @%F.txt
+ #
+ # used by: index; no option equivalent
+@@ -150,10 +150,10 @@
+ #	See http://www.research.compaq.com/SRC/virtualpaper/pstotext.html for
+ #	information about the pstotext program.
+ 
+-#FilterFile *.bz2		bunzip2 -c %f > @%F
+-#FilterFile *.gz		gunzip -c %f > @%F
+-#FilterFile *.Z		uncompress -c %f > @%F
+-#FilterFile *.pdf	pdftotext %f @%F.txt
++FilterFile *.bz2		bunzip2 -c %f > @%F
++FilterFile *.gz		gunzip -c %f > @%F
++FilterFile *.Z		uncompress -c %f > @%F
++FilterFile *.pdf	pdftotext %f @%F.txt
+ #FilterFile *.ps	pstotext %f > @%F.txt
+ #
+ # used by: index, extract; no option equivalent.
+@@ -192,7 +192,7 @@
+ #	When "yes", incrementally index files and add them to an existing
+ #	index.
+ 
+-#IndexFile		swish++.index
++IndexFile		swish++.index
+ #
+ # used by: index, search; same as the -i option.
+ #
+diff -urN swish++-5.7.org/www_example/search.cgi swish++-5.7/www_example/search.cgi
+--- swish++-5.7.org/www_example/search.cgi	Tue Feb 19 19:29:36 2002
++++ swish++-5.7/www_example/search.cgi	Tue Feb 19 19:29:53 2002
+@@ -1,4 +1,4 @@
+-#! /usr/local/bin/perl
++#! /usr/bin/perl
+ ###############################################################################
+ #
+ # NAME
+@@ -30,19 +30,19 @@
+ #
+ ###############################################################################
+ 
+-use lib qw( /home/www/swish++/lib/ );
++use lib qw( /usr/lib/swish++ );
+ #		Put the path to where the WWW library is above.
+ require WWW;
+ 
+-$SWISH_BIN =	'/usr/local/bin';
++$SWISH_BIN =	'/usr/bin';
+ #		The full path to the bin directory where you installed the
+ #		SWISH++ executables.
+ 
+-$DOC_ROOT =	'/home/www/httpd/htdocs';
++$DOC_ROOT =	'/var/www/htdocs';
+ #		The top-level directory for your document tree presumeably
+ #		where the index was generated from.
+ 
+-$INDEX_FILE =	'/home/www/swish++.index';
++$INDEX_FILE =	'/var//www/swish++.index';
+ #		The full path to the index file to be searched through.
+ 
+ #$SOCKET_FILE =	'/tmp/search.socket';
+@@ -117,7 +117,7 @@
+ 	##
+ 	# Open a pipe from the 'search' command.
+ 	##
+-	open( SEARCH, "$SWISH_BIN/search -i $INDEX_FILE @options $search |" ) ||
++	open( SEARCH, "$SWISH_BIN/search++ -i $INDEX_FILE @options $search |" ) ||
+ 		die "open: $!";
+ }
+ 
