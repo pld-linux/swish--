@@ -7,6 +7,7 @@ Release:	2
 License:	GPL
 Group:		Applications/Text
 Source0:	http://homepage.mac.com/pauljlucas/software/%{name}-%{version}.tar.gz
+# Source0-md5:	573e7c949d74f2ac654556766025bfb3
 Patch0:		%{name}-debian.patch
 Patch1:		%{name}-splitmailbox.patch
 URL:		http://homepage.mac.com/pauljlucas/software/swish/
