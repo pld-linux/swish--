@@ -1,0 +1,279 @@
+diff -uNr swish++-5.9.5.orig/GNUmakefile swish++-5.9.5/GNUmakefile
+--- swish++-5.9.5.orig/GNUmakefile	Wed Sep 18 00:29:29 2002
++++ swish++-5.9.5/GNUmakefile	Wed Sep 18 00:32:06 2002
+@@ -20,7 +20,7 @@
+ ##
+ 
+ CPP_TARGET:=	index search extract
+-OTHER_TARGET:=	httpindex searchc searchmonitor splitmail
++OTHER_TARGET:=	httpindex searchc searchmonitor splitmailbox
+ BIN_TARGET:=	$(CPP_TARGET) $(OTHER_TARGET)
+ INITD_TARGET:=	searchd
+ TARGET:=	$(BIN_TARGET) $(INITD_TARGET)
+diff -uNr swish++-5.9.5.orig/man/man1/index.1 swish++-5.9.5/man/man1/index.1
+--- swish++-5.9.5.orig/man/man1/index.1	Sat Jun  1 02:15:17 2002
++++ swish++-5.9.5/man/man1/index.1	Wed Sep 18 00:34:20 2002
+@@ -435,7 +435,7 @@
+ prior to indexing since there's no point in indexing a single mailbox:
+ every search result would return a rank of 100 for the same file.
+ Therefore, the
+-.BR splitmail (1)
++.BR splitmailbox (1)
+ utility is included in the SWISH++ distribution.
+ .SS Manual Module
+ Additional processing is done for Unix manual page files.
+@@ -1156,7 +1156,7 @@
+ .BR find (1),
+ .BR nroff (1),
+ .BR search (1),
+-.BR splitmail (1),
++.BR splitmailbox (1),
+ .BR swish++.conf (4),
+ .BR glob (7),
+ .BR man (7).
+diff -uNr swish++-5.9.5.orig/man/man1/splitmail.1 swish++-5.9.5/man/man1/splitmail.1
+--- swish++-5.9.5.orig/man/man1/splitmail.1	Wed Apr 18 06:29:24 2001
++++ swish++-5.9.5/man/man1/splitmail.1	Thu Jan  1 01:00:00 1970
+@@ -1,74 +0,0 @@
+-.\"
+-.\"	SWISH++
+-.\"	splitmail.1
+-.\"
+-.\"	Copyright (C) 2000  Paul J. Lucas
+-.\"
+-.\"	This program is free software; you can redistribute it and/or modify
+-.\"	it under the terms of the GNU General Public License as published by
+-.\"	the Free Software Foundation; either version 2 of the License, or
+-.\"	(at your option) any later version.
+-.\"
+-.\"	This program is distributed in the hope that it will be useful,
+-.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+-.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-.\"	GNU General Public License for more details.
+-.\"
+-.\"	You should have received a copy of the GNU General Public License
+-.\"	along with this program; if not, write to the Free Software
+-.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-.\"
+-.\" ---------------------------------------------------------------------------
+-.\" define code-start macro
+-.de cS
+-.sp
+-.nf
+-.RS 5
+-.ft CW
+-.ta .5i 1i 1.5i 2i 2.5i 3i 3.5i 4i 4.5i 5i 5.5i
+-..
+-.\" define code-end macro
+-.de cE
+-.ft 1
+-.RE
+-.fi
+-.sp
+-..
+-.\" ---------------------------------------------------------------------------
+-.TH \f3splitmail\f1 1 "December 13, 2000" "SWISH++"
+-.SH NAME
+-splitmail \- split mailbox files prior to indexing
+-.SH SYNOPSIS
+-.B splitmail -p
+-.I prefix
+-.BI "[ " file " ]"
+-.SH DESCRIPTION
+-.B splitmail
+-is a utility to split a mailbox file
+-(or standard input)
+-comprised of multiple messages
+-into multiple files of individual messages
+-to facilitate indexing with
+-.BR index (1).
+-The generated files have 5-digit increasing numbers
+-appended to a common prefix.
+-.SH OPTIONS
+-.TP 12
+-.BI \-p prefix
+-Specifies the common prefix.
+-.SH EXAMPLE
+-The command:
+-.cS
+-splitmail -p msg sent_messages
+-.cE
+-splits the mailbox \f(CWsent_messages\f1 into files named
+-\f(CWmsg.00001\f1,
+-\f(CWmsg.00002\f1,
+-and so on.
+-.SH NOTE
+-This utility hasn't been exhaustively tested.
+-.SH SEE ALSO
+-.BR index (1).
+-.SH AUTHOR
+-Paul J. Lucas
+-.RI < pauljlucas@mac.com >
+diff -uNr swish++-5.9.5.orig/man/man1/splitmailbox.1 swish++-5.9.5/man/man1/splitmailbox.1
+--- swish++-5.9.5.orig/man/man1/splitmailbox.1	Thu Jan  1 01:00:00 1970
++++ swish++-5.9.5/man/man1/splitmailbox.1	Wed Sep 18 00:34:03 2002
+@@ -0,0 +1,74 @@
++.\"
++.\"	SWISH++
++.\"	splitmailbox.1
++.\"
++.\"	Copyright (C) 2000  Paul J. Lucas
++.\"
++.\"	This program is free software; you can redistribute it and/or modify
++.\"	it under the terms of the GNU General Public License as published by
++.\"	the Free Software Foundation; either version 2 of the License, or
++.\"	(at your option) any later version.
++.\"
++.\"	This program is distributed in the hope that it will be useful,
++.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
++.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++.\"	GNU General Public License for more details.
++.\"
++.\"	You should have received a copy of the GNU General Public License
++.\"	along with this program; if not, write to the Free Software
++.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++.\"
++.\" ---------------------------------------------------------------------------
++.\" define code-start macro
++.de cS
++.sp
++.nf
++.RS 5
++.ft CW
++.ta .5i 1i 1.5i 2i 2.5i 3i 3.5i 4i 4.5i 5i 5.5i
++..
++.\" define code-end macro
++.de cE
++.ft 1
++.RE
++.fi
++.sp
++..
++.\" ---------------------------------------------------------------------------
++.TH \f3splitmailbox\f1 1 "December 13, 2000" "SWISH++"
++.SH NAME
++splitmailbox \- split mailbox files prior to indexing
++.SH SYNOPSIS
++.B splitmailbox -p
++.I prefix
++.BI "[ " file " ]"
++.SH DESCRIPTION
++.B splitmailbox
++is a utility to split a mailbox file
++(or standard input)
++comprised of multiple messages
++into multiple files of individual messages
++to facilitate indexing with
++.BR index (1).
++The generated files have 5-digit increasing numbers
++appended to a common prefix.
++.SH OPTIONS
++.TP 12
++.BI \-p prefix
++Specifies the common prefix.
++.SH EXAMPLE
++The command:
++.cS
++splitmailbox -p msg sent_messages
++.cE
++splits the mailbox \f(CWsent_messages\f1 into files named
++\f(CWmsg.00001\f1,
++\f(CWmsg.00002\f1,
++and so on.
++.SH NOTE
++This utility hasn't been exhaustively tested.
++.SH SEE ALSO
++.BR index (1).
++.SH AUTHOR
++Paul J. Lucas
++.RI < pauljlucas@mac.com >
+diff -uNr swish++-5.9.5.orig/splitmail.in swish++-5.9.5/splitmail.in
+--- swish++-5.9.5.orig/splitmail.in	Wed Apr 18 06:27:11 2001
++++ swish++-5.9.5/splitmail.in	Thu Jan  1 01:00:00 1970
+@@ -1,41 +0,0 @@
+-#! %%PERL%%
+-##
+-#	SWISH++
+-#	splitmail
+-#
+-#	Copyright (C) 2000  Paul J. Lucas
+-#
+-#	This program is free software; you can redistribute it and/or modify
+-#	it under the terms of the GNU General Public License as published by
+-#	the Free Software Foundation; either version 2 of the License, or
+-#	(at your option) any later version.
+-#
+-#	This program is distributed in the hope that it will be useful,
+-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#	GNU General Public License for more details.
+-#
+-#	You should have received a copy of the GNU General Public License
+-#	along with this program; if not, write to the Free Software
+-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-##
+-
+-########## You shouldn't have to change anything below this line. #############
+-
+-use File::Basename;
+-use Getopt::Std;
+-
+-$me = basename( $0 );
+-
+-getopts( 'p:' ) or die "usage: $me -p prefix\n";
+-die "$me: -p required\n" unless $opt_p;
+-
+-while ( <> ) {
+-	if ( /^From / ) {
+-		close( FILE );
+-		open( FILE, ">$opt_p." . sprintf( "%05d", ++$i ) ) ||
+-			die "$me: can not create file\n";
+-	}
+-	print FILE;
+-}
+-close( FILE );
+diff -uNr swish++-5.9.5.orig/splitmailbox.in swish++-5.9.5/splitmailbox.in
+--- swish++-5.9.5.orig/splitmailbox.in	Thu Jan  1 01:00:00 1970
++++ swish++-5.9.5/splitmailbox.in	Wed Sep 18 00:31:16 2002
+@@ -0,0 +1,41 @@
++#! %%PERL%%
++##
++#	SWISH++
++#	splitmailbox
++#
++#	Copyright (C) 2000  Paul J. Lucas
++#
++#	This program is free software; you can redistribute it and/or modify
++#	it under the terms of the GNU General Public License as published by
++#	the Free Software Foundation; either version 2 of the License, or
++#	(at your option) any later version.
++#
++#	This program is distributed in the hope that it will be useful,
++#	but WITHOUT ANY WARRANTY; without even the implied warranty of
++#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++#	GNU General Public License for more details.
++#
++#	You should have received a copy of the GNU General Public License
++#	along with this program; if not, write to the Free Software
++#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++##
++
++########## You shouldn't have to change anything below this line. #############
++
++use File::Basename;
++use Getopt::Std;
++
++$me = basename( $0 );
++
++getopts( 'p:' ) or die "usage: $me -p prefix\n";
++die "$me: -p required\n" unless $opt_p;
++
++while ( <> ) {
++	if ( /^From / ) {
++		close( FILE );
++		open( FILE, ">$opt_p." . sprintf( "%05d", ++$i ) ) ||
++			die "$me: can not create file\n";
++	}
++	print FILE;
++}
++close( FILE );
