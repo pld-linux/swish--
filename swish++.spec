@@ -1,4 +1,4 @@
-%include        /usr/lib/rpm/macros.perl
+%include	/usr/lib/rpm/macros.perl
 Summary:	Simple Web Indexing System for Humans
 Summary(pl):	Prosty system indeksowania stron WWW
 Name:		swish++
