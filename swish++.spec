@@ -38,14 +38,12 @@ rm -rf $RPM_BUILD_ROOT
 	I_OWNER="" \
 	I_GROUP=""
 
-gzip -9nf www_example/* Changes Email* README
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc */*.gz *.gz
+%doc www_example/* Changes Email* README
 %attr(755,root,root) %{_bindir}/*
 %{_libdir}/%{name}
 %{_mandir}/man?/*
