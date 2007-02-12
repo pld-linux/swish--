@@ -1,6 +1,6 @@
 %include	/usr/lib/rpm/macros.perl
 Summary:	Simple Web Indexing System for Humans
-Summary(pl):	Prosty system indeksowania stron WWW
+Summary(pl.UTF-8):   Prosty system indeksowania stron WWW
 Name:		swish++
 Version:	6.0.4
 Release:	1
@@ -21,10 +21,10 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 SWISH++ is a Unix-based file indexing and searching engine (typically
 used to index and search files on web sites).
 
-%description -l pl
-SWISH++ jest bazuj±cym na Uniksie systemem indeksowania oraz silnikiem
-wyszukiwarki (typowo u¿ywanym do indeksowania oraz przeszukiwania
-plików na stronach WWW).
+%description -l pl.UTF-8
+SWISH++ jest bazujÄ…cym na Uniksie systemem indeksowania oraz silnikiem
+wyszukiwarki (typowo uÅ¼ywanym do indeksowania oraz przeszukiwania
+plikÃ³w na stronach WWW).
 
 %prep
 %setup -q
