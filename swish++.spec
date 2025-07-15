@@ -28,7 +28,7 @@ plików na stronach WWW).
 %prep
 %setup -q
 %patch -P0 -p1
-#%patch1 -p1
+#%%patch1 -p1
 
 %build
 %{__make} CC="%{__cxx}" CXX="%{__cxx}" OPTIM="%{rpmcflags}"
